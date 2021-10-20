@@ -57,4 +57,7 @@ export default class {
     get lastBlock() {
         return this.#chain[this.#chain.length - 1]
     }
+    get chain() {
+        return [...this.#chain]
+    }
 }

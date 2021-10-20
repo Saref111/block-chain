@@ -1,10 +1,14 @@
-export default new class {
+import pkg from 'js-sha256';
+const { sha256 } = pkg;
+
+export default class {
     #chain = null
     #currentTransactions = null 
 
     constructor() {
         this.#init()
-        console.log('init blockchain');
+
+        this.createNewBlock(1, 100)
     }
 
     #init() {
@@ -12,8 +16,18 @@ export default new class {
         this.#currentTransactions = []
     }
 
-    createNewBlock() {
+    createNewBlock(proof, prevHash = null) {
+        const block = {
+            'index': this.#chain.length + 1,
+            'timestamp': new Date().getTime() / 1000,
+            'transactions': this.#currentTransactions,
+            'proof': proof,
+            'prevHash': prevHash ? prevHash : this.getHash(this.lastBlock) 
+        }
 
+        this.#currentTransactions = []
+        this.#chain.push(block)
+        return block
     }
 
     createNewTransaction(sender, recipient, amount) {
@@ -21,8 +35,23 @@ export default new class {
         return this.#currentTransactions.length - 1 
     }
 
-    static getHash(block) {
+    proofOfWork(lastProof) {
+        let proof = 0
 
+        while (!this.validateProof(lastProof, proof)) {
+            proof = proof + 1
+        }
+
+        return proof
+    }
+
+    validateProof(lastProof, proof) {
+        const guess = sha256(JSON.stringify(Number(lastProof) * Number(proof)))
+        return guess.endsWith('0000')
+    }
+
+    static getHash(block) {
+        return sha256(JSON.stringify(block))
     }
 
     get lastBlock() {

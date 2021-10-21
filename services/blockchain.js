@@ -6,14 +6,10 @@ export default class {
     #currentTransactions = null 
 
     constructor() {
-        this.#init()
-
-        this.createNewBlock(1, 100)
-    }
-
-    #init() {
         this.#chain = []
         this.#currentTransactions = []
+
+        this.createNewBlock(1, 100)
     }
 
     createNewBlock(proof, prevHash = null) {
